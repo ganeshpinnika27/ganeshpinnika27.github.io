@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Drug Response Modeling | Ganesh Pinnika</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <nav class="topnav"><div class="wrap">
+    <a class="brand" href="../index.html">Ganesh Pinnika</a>
+    <a href="../index.html#research">Research</a>
+    <a href="../index.html#publications">Publications</a>
+    <a href="../index.html#experience">Experience</a>
+    <a href="../index.html#contact">Contact</a>
+  </div></nav>
+
+  <main class="wrap">
+    <p class="crumb"><a href="../index.html#research">Research</a> / Cancer genomics</p>
+    <header class="page-head">
+      <h1>Pharmacogenomic Drug Response Modeling with External Validation</h1>
+      <p class="meta">Independent project | Python, scikit-learn, XGBoost, SHAP, statsmodels | GDSC2, DepMap 24Q4, PRISM 20Q2</p>
+      <a class="btn" href="https://github.com/ganeshpinnika27/drug-response-modeling">Code and full results on GitHub</a>
+    </header>
+
+    <section>
+      <h2>Summary</h2>
+      <p>Cancer cell line screens are the main public resource for linking tumor genomics to drug response.
+        This project predicts the response of 713 cell lines to 270 drugs from RNA-seq and mutation data,
+        searches for mutation biomarkers of sensitivity, and then asks the question most analyses skip: do the
+        models and biomarkers hold up in a different screen, measured with a different assay, on cell lines the
+        models never saw?</p>
+      <div class="callout"><p><b>Key result.</b> The models transfer to the independent PRISM screen for 62 of
+        116 drugs, and significant biomarkers replicate ten times more often than chance. Accuracy within one
+        screen did not predict accuracy in the other.</p></div>
+    </section>
+
+    <section>
+      <h2>Data</h2>
+      <div class="tablewrap"><table>
+        <tr><th>Source</th><th>Content</th><th>Use</th></tr>
+        <tr><td>GDSC2 release 8.5 (Sanger)</td><td>Dose-response (LN IC50) for 286 drugs and 969 cell lines</td><td>Training and association testing</td></tr>
+        <tr><td>DepMap 24Q4 (Broad)</td><td>RNA-seq expression and hotspot mutations</td><td>Model features</td></tr>
+        <tr><td>PRISM Repurposing 20Q2 (Broad)</td><td>Dose-response AUC from an independent pooled screen</td><td>External validation only</td></tr>
+      </table></div>
+      <p>713 cell lines had both drug response and DepMap data. Features were the 2,000 most variable genes,
+        112 drug-target genes and 21 recurrently mutated hotspot genes. All downloads are pinned and checksum
+        verified so the analysis can be reproduced exactly.</p>
+    </section>
+
+    <section>
+      <h2>Approach</h2>
+      <ul>
+        <li><b>Prediction:</b> elastic net and XGBoost per drug with nested cross-validation (5 outer folds,
+          inner tuning), scaling fit inside each fold to prevent leakage.</li>
+        <li><b>Biomarkers:</b> mutation-drug association tests with a tissue-adjusted linear model,
+          <code>response ~ mutation + tissue</code>, and Benjamini-Hochberg FDR control.</li>
+        <li><b>Interpretation:</b> SHAP attribution on the best-predicted drugs, with known biomarkers as positive controls.</li>
+        <li><b>External validation:</b> 116 drugs matched to PRISM; models trained on all GDSC lines predicted
+          236 PRISM cell lines that were never screened in GDSC.</li>
+        <li><b>Engineering:</b> profiling showed the elastic net search took about 90% of runtime; narrowing it
+          made fitting 5 to 12 times faster with no change in held-out accuracy.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Results</h2>
+      <h3>1. Prediction: a sparse linear model is as good as gradient boosting</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Model</th><th>Median CV Pearson r (IQR), 270 drugs</th></tr>
+        <tr><td>Elastic net</td><td>0.554 (0.477 to 0.607)</td></tr>
+        <tr><td>XGBoost</td><td>0.546 (0.479 to 0.610)</td></tr>
+      </table></div>
+      <p>XGBoost was better for 132 of 270 drugs (Wilcoxon p = 0.56). The best-predicted drugs were Nutlin-3a
+        (r = 0.75), the MCL1 inhibitor AZD5991 (0.73) and the BCL2 inhibitor venetoclax (0.72).</p>
+      <figure class="narrow"><img src="../assets/drug/fig1_model_comparison.png" alt="Per-drug accuracy, elastic net vs XGBoost" loading="lazy">
+        <figcaption>Per-drug cross-validated accuracy. Points lie on the diagonal: the two models perform the same.</figcaption></figure>
+
+      <h3>2. Biomarkers: tissue of origin inflates discovery tenfold</h3>
+      <p>Without adjustment, 537 mutation-drug associations passed FDR &lt; 5%. Most reflected tissue: EZH2
+        mutations (80% in lymphoid lines) and KRAS mutations (75% in lung, pancreas and bowel) stood in for
+        tissue-wide drug sensitivity. Adjusting for tissue left 50 associations, mostly known pathway biology.</p>
+      <div class="tablewrap"><table>
+        <tr><th>Test</th><th>FDR &lt; 5% hits</th><th>EZH2 hits</th><th>KRAS hits</th></tr>
+        <tr><td>Unadjusted</td><td>537</td><td>70</td><td>214</td></tr>
+        <tr><td>Tissue-adjusted</td><td>50</td><td>0</td><td>12</td></tr>
+      </table></div>
+      <figure><img src="../assets/drug/fig2_association_volcano.png" alt="Volcano plots before and after tissue adjustment" loading="lazy">
+        <figcaption>Mutation-drug associations before (left) and after (right) tissue adjustment. What remains: BRAF with BRAF/MEK/ERK inhibitors, PIK3CA with PI3K/AKT inhibitors, TP53 with Nutlin-3a resistance.</figcaption></figure>
+
+      <h3>3. Interpretation: SHAP recovers known biology</h3>
+      <p>SHAP ranked SLFN11 expression as the dominant predictor of irinotecan response, with high SLFN11 meaning
+        greater sensitivity, the established direction for topoisomerase I inhibitors. BCL2 ranked first for
+        venetoclax, and MDM2 expression with TP53 mutation led for Nutlin-3a.</p>
+      <figure class="narrow"><img src="../assets/drug/fig3_shap_Irinotecan.png" alt="SHAP summary for irinotecan" loading="lazy">
+        <figcaption>SHAP summary for irinotecan. SLFN11 expression dominates the model.</figcaption></figure>
+
+      <h3>4. External validation in PRISM</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Agreement with PRISM, median Spearman rho over 116 drugs</th><th>rho</th></tr>
+        <tr><td>Measured GDSC vs measured PRISM, same cell lines</td><td>0.26</td></tr>
+        <tr><td>Model predictions, shared cell lines</td><td>0.18</td></tr>
+        <tr><td>Model predictions, 236 new cell lines</td><td>0.15</td></tr>
+      </table></div>
+      <p>The two screens agree only modestly on the same drug and cell line, which caps any model. Within that
+        ceiling the models transfer: predictions on unseen cell lines correlate significantly with PRISM for 62
+        of 116 drugs. Transfer tracks screen agreement (Spearman 0.65 across drugs), not within-GDSC accuracy
+        (0.13, not significant).</p>
+      <div class="tablewrap"><table>
+        <tr><th>GDSC association</th><th>Tested in PRISM</th><th>Same direction</th><th>Replicated (p &lt; 0.05)</th></tr>
+        <tr><td>Significant (FDR &lt; 5%)</td><td>30</td><td>87%</td><td>53%</td></tr>
+        <tr><td>Not significant (baseline)</td><td>1,605</td><td>54%</td><td>5%</td></tr>
+      </table></div>
+      <figure><img src="../assets/drug/fig4_prism_validation.png" alt="Agreement with PRISM across 116 drugs" loading="lazy">
+        <figcaption>Left: agreement with PRISM for measured responses and model predictions. Right: model accuracy on new cell lines follows how well the two screens agree for each drug.</figcaption></figure>
+    </section>
+
+    <section>
+      <h2>Takeaways</h2>
+      <ul>
+        <li>Tissue adjustment is essential in pan-cancer biomarker scans; without it, most hits are tissue effects.</li>
+        <li>Cross-validation within one screen overstates how well a drug response model will generalize.</li>
+        <li>BRAF, PIK3CA and RAS biomarkers replicate across screens and assays.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="wrap"><p><a href="../index.html">Back to home</a></p></footer>
+</body>
+</html>

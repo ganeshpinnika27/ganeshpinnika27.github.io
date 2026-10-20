@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day-Neutral Flowering Genes in Cotton | Ganesh Pinnika</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <nav class="topnav"><div class="wrap">
+    <a class="brand" href="../index.html">Ganesh Pinnika</a>
+    <a href="../index.html#research">Research</a>
+    <a href="../index.html#publications">Publications</a>
+    <a href="../index.html#experience">Experience</a>
+    <a href="../index.html#contact">Contact</a>
+  </div></nav>
+
+  <main class="wrap">
+    <p class="crumb"><a href="../index.html#research">Research</a> / Plant genomics</p>
+    <header class="page-head">
+      <h1>Day-Neutral Flowering Candidate Genes Identified by Selection Mapping in Upland Cotton</h1>
+      <p class="cite"><b>Pinnika, G.</b>, Wubben, M.J., McCarty, J.C., Fang, D.D., Thyssen, G.N. (2026).
+        <i>Theoretical and Applied Genetics</i> 139, 248. First author.</p>
+      <a class="btn" href="https://doi.org/10.1007/s00122-026-05357-9">Read the paper</a>
+    </header>
+
+    <section>
+      <h2>Summary</h2>
+      <p>Modern upland cotton must flower regardless of day length to be grown at temperate latitudes, but the
+        genes behind this day-neutral habit are not well understood. We resequenced two parents and 40
+        recombinant inbred lines (RILs) that had all been selected for day-neutral flowering, and searched for
+        genomic regions where the photoperiod-sensitive parent's DNA had been eliminated by that selection.</p>
+      <div class="callout"><p><b>Key result.</b> A selection signal on chromosome D07 contains missense variants
+        in cotton orthologs of <i>ELF8/VIP6</i> and <i>VIP3/SKI8</i>, two subunits of the PAF1 transcription
+        elongation complex. Loss of either gene causes early, photoperiod-insensitive flowering in
+        <i>Arabidopsis</i>.</p></div>
+    </section>
+
+    <section>
+      <h2>Approach</h2>
+      <div class="two">
+        <div>
+          <ul>
+            <li><b>Population:</b> RILs from DP61 (day-neutral) by MT2468 Ren1, selected for day-neutral flowering in every generation.</li>
+            <li><b>Sequencing:</b> parents at about 30x and 40 RILs at 10x, aligned to the <i>G. hirsutum</i> JGI v3.0 genome with bwa-mem2.</li>
+            <li><b>Selection mapping:</b> joint SNP calling with bcftools, then keeping parent-specific SNPs where every RIL carries the day-neutral allele.</li>
+            <li><b>Regions of interest:</b> SNP density in 100 kb sliding windows (50 kb steps).</li>
+            <li><b>Annotation:</b> SnpEff for coding effects, DELLY for structural variants, and TAIR10 orthologs for gene function.</li>
+          </ul>
+        </div>
+        <figure class="tall"><img src="../assets/tag/fig1_pipeline.png" alt="Selection mapping pipeline" loading="lazy">
+          <figcaption>Figure 1 of the paper. Pipeline from alignment to candidate genes.</figcaption></figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>Results</h2>
+      <div class="tablewrap"><table>
+        <tr><th>Step</th><th>Result</th></tr>
+        <tr><td>Parent-specific SNPs (DP61 reference, MT2468 Ren1 alternate)</td><td>1,092,427</td></tr>
+        <tr><td>SNPs where all 40 RILs carry the day-neutral allele</td><td>23,961</td></tr>
+        <tr><td>Regions under selection</td><td>5 (A01, D05, D07, D09, D12)</td></tr>
+        <tr><td>Primary region</td><td>D07: 1.20 to 2.45 Mb, 433 SNPs</td></tr>
+        <tr><td>Missense variants in all regions</td><td>48 in 42 genes (17 in 16 genes on D07)</td></tr>
+        <tr><td>Structural variants near D07</td><td>10, including a 16.5 kb deletion in MT2468 Ren1</td></tr>
+      </table></div>
+
+      <figure><img src="../assets/tag/fig2_genome.png" alt="Genome-wide density of SNPs fixed for the day-neutral allele" loading="lazy">
+        <figcaption>Figure 2 of the paper. Genome-wide density of SNPs fixed for the day-neutral allele across all 40 RILs.</figcaption></figure>
+
+      <figure><img src="../assets/tag/fig3_d07.png" alt="Candidate region on chromosome D07" loading="lazy">
+        <figcaption>Figure 3 of the paper. The D07 candidate region: SNP density, missense variants (red lines), genes with coding changes (arrows) and structural variants (triangles).</figcaption></figure>
+
+      <h3>Priority candidate genes</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Gene</th><th>Position (D07)</th><th>Amino acid change</th><th>Arabidopsis ortholog</th><th>Role</th></tr>
+        <tr><td>Gohir.D07G014500</td><td>1,638,485</td><td>Arg488Pro</td><td>ELF8 / VIP6</td><td>PAF1 complex subunit; change in the CTD-interaction-like domain</td></tr>
+        <tr><td>Gohir.D07G013300</td><td>1,503,103</td><td>Asp255Asn</td><td>VIP3 / SKI8</td><td>PAF1 complex subunit; change in the sixth WD40 repeat</td></tr>
+      </table></div>
+      <figure><img src="../assets/tag/fig4_domains.png" alt="Protein domains of the two candidate genes" loading="lazy">
+        <figcaption>Figure 4 of the paper. Domain architecture and missense variant positions for ELF8/VIP6 and VIP3/SKI8.</figcaption></figure>
+    </section>
+
+    <section>
+      <h2>Takeaways</h2>
+      <ul>
+        <li>Selection mapping in a selected RIL panel can locate trait genes without a segregating phenotype.</li>
+        <li>The PAF1 complex is a priority candidate for day-neutral flowering in cotton and a possible source of markers for breeding.</li>
+      </ul>
+      <p class="muted">Figures reproduced from the paper, a U.S. Government work not under copyright in the US.</p>
+    </section>
+  </main>
+
+  <footer class="wrap"><p><a href="../index.html">Back to home</a></p></footer>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Immunotherapy Response Biomarkers | Ganesh Pinnika</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <nav class="topnav"><div class="wrap">
+    <a class="brand" href="../index.html">Ganesh Pinnika</a>
+    <a href="../index.html#research">Research</a>
+    <a href="../index.html#publications">Publications</a>
+    <a href="../index.html#experience">Experience</a>
+    <a href="../index.html#contact">Contact</a>
+  </div></nav>
+
+  <main class="wrap">
+    <p class="crumb"><a href="../index.html#research">Research</a> / Cancer genomics</p>
+    <header class="page-head">
+      <h1>Immunotherapy Response Biomarkers in Urothelial Cancer</h1>
+      <p class="meta">Independent project | Python, lifelines, statsmodels, scikit-learn, R | IMvigor210, GEO GSE176307</p>
+      <a class="btn" href="https://github.com/ganeshpinnika27/immunotherapy-biomarkers">Code and full results on GitHub</a>
+    </header>
+
+    <section>
+      <h2>Summary</h2>
+      <p>In the IMvigor210 trial of atezolizumab in metastatic urothelial cancer, 23% of evaluable patients
+        responded to treatment. The original study linked response to tumor mutational burden (TMB), CD8 T-cell
+        activity and a fibroblast TGF-beta signature (pan-F-TBRS). This project reanalyzes the trial with
+        stricter model comparisons, then tests the markers and the trained model in an independent real-world
+        cohort from a different institution.</p>
+      <div class="callout"><p><b>Key result.</b> The model trained on IMvigor210 reached AUROC 0.81 in the
+        independent cohort without refitting, and the TMB survival effect replicated almost exactly (HR 0.76 vs
+        0.75 per SD).</p></div>
+    </section>
+
+    <section>
+      <h2>Data</h2>
+      <div class="tablewrap"><table>
+        <tr><th>Cohort</th><th>Patients</th><th>Data</th><th>Use</th></tr>
+        <tr><td>IMvigor210 (Mariathasan et al., Nature 2018)</td><td>348; 298 evaluable for response, 68 responders</td><td>RNA-seq, FoundationOne TMB, response, survival, immune phenotype</td><td>Discovery</td></tr>
+        <tr><td>GSE176307 (Rose et al., Br J Cancer 2021)</td><td>90; 16 responders</td><td>RNA-seq, panel TMB, response, survival</td><td>External validation</td></tr>
+      </table></div>
+      <p>The IMvigor210 data package can no longer be installed because a required Bioconductor dependency was
+        retired, so the export reads the saved data objects directly.</p>
+    </section>
+
+    <section>
+      <h2>Approach</h2>
+      <ul>
+        <li><b>Survival:</b> Kaplan-Meier with log-rank tests; univariable and multivariable Cox models with a
+          proportional-hazards check.</li>
+        <li><b>Response:</b> logistic regression with 5-fold by 20-repeat cross-validation. All feature sets are
+          compared on the same patients with identical splits, and gains over TMB carry bootstrap 95% CIs.</li>
+        <li><b>TGF-beta and immune exclusion:</b> pan-F-TBRS tested within each immune phenotype and with a
+          TBRS by excluded interaction model.</li>
+        <li><b>External validation:</b> signatures scored identically, and IMvigor210-trained models applied
+          to the new cohort with no refitting.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Results</h2>
+      <h3>1. TMB and CD8 T-effector independently predict survival</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Multivariable Cox, HR per SD (n = 246)</th><th>HR (95% CI)</th><th>p</th></tr>
+        <tr><td>TMB</td><td>0.78 (0.66 to 0.92)</td><td>0.002</td></tr>
+        <tr><td>CD8 T-effector</td><td>0.82 (0.69 to 0.97)</td><td>0.019</td></tr>
+        <tr><td>Pan-F-TBRS</td><td>1.08 (0.92 to 1.28)</td><td>0.34</td></tr>
+        <tr><td>ECOG 1 or higher</td><td>2.15 (1.52 to 3.04)</td><td>2e-5</td></tr>
+        <tr><td>Liver metastases</td><td>1.49 (1.07 to 2.07)</td><td>0.017</td></tr>
+      </table></div>
+      <div class="two">
+        <figure><img src="../assets/immuno/km_tmb_teff.png" alt="Kaplan-Meier curves by TMB and T-effector" loading="lazy">
+          <figcaption>Overall survival by TMB and T-effector group (log-rank p = 7e-5).</figcaption></figure>
+        <figure><img src="../assets/immuno/cox_forest.png" alt="Multivariable Cox forest plot" loading="lazy">
+          <figcaption>Multivariable Cox model.</figcaption></figure>
+      </div>
+
+      <h3>2. Adding T-effector to TMB does not improve response prediction</h3>
+      <p>All feature sets were compared on the same 210 patients (47 responders) with identical CV splits:</p>
+      <div class="tablewrap"><table>
+        <tr><th>Feature set</th><th>AUROC</th><th>Gain over TMB (95% CI)</th></tr>
+        <tr><td>TMB</td><td>0.74</td><td></td></tr>
+        <tr><td>CD8 T-effector</td><td>0.59</td><td>-0.16 (-0.28 to -0.04)</td></tr>
+        <tr><td>TMB + T-effector</td><td>0.74</td><td>+0.002 (-0.02 to +0.03)</td></tr>
+        <tr><td>TMB + signatures + clinical</td><td>0.77</td><td>+0.04 (-0.02 to +0.10)</td></tr>
+      </table></div>
+
+      <h3>3. Pan-F-TBRS marks non-response in immune-excluded tumors</h3>
+      <p>Within excluded tumors, higher pan-F-TBRS lowered the odds of response (OR 0.58 per SD, p = 0.028),
+        with no effect in desert or inflamed tumors. This reproduces the direction reported in the original
+        study; the formal interaction test was a trend (p = 0.077).</p>
+      <figure><img src="../assets/immuno/tbrs_by_phenotype.png" alt="Pan-F-TBRS by response within immune phenotype" loading="lazy">
+        <figcaption>Pan-F-TBRS in responders and non-responders within each immune phenotype.</figcaption></figure>
+
+      <h3>4. External validation</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Measure</th><th>IMvigor210</th><th>Independent cohort</th></tr>
+        <tr><td>TMB, response AUROC</td><td>0.74</td><td>0.77 (0.62 to 0.90)</td></tr>
+        <tr><td>Trained model (TMB + T-effector + pan-F-TBRS), AUROC</td><td>0.77</td><td>0.81 (0.69 to 0.91), no refitting</td></tr>
+        <tr><td>TMB, survival HR per SD</td><td>0.75</td><td>0.76 (p = 0.025)</td></tr>
+        <tr><td>CD8 T-effector, survival HR per SD</td><td>0.82</td><td>0.72 (p = 0.026)</td></tr>
+      </table></div>
+      <figure><img src="../assets/immuno/validation_summary.png" alt="External validation summary" loading="lazy">
+        <figcaption>Left: IMvigor210-trained models applied unchanged to the independent cohort. Right: survival effect sizes in both cohorts.</figcaption></figure>
+    </section>
+
+    <section>
+      <h2>Takeaways</h2>
+      <ul>
+        <li>TMB is the most robust single marker here: it replicates across cohorts and TMB assays.</li>
+        <li>Fair comparisons (same patients, same splits) change conclusions: T-effector adds little on top of TMB.</li>
+        <li>A model trained on a clinical trial transfers to real-world patients without refitting.</li>
+      </ul>
+      <p class="muted">Limitations: the validation cohort is small (16 responders) and has no pathology-based
+        immune phenotype, so the TGF-beta finding is not externally validated.</p>
+    </section>
+  </main>
+
+  <footer class="wrap"><p><a href="../index.html">Back to home</a></p></footer>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brown Fiber Color and a Missing Retrotransposon | Ganesh Pinnika</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <nav class="topnav"><div class="wrap">
+    <a class="brand" href="../index.html">Ganesh Pinnika</a>
+    <a href="../index.html#research">Research</a>
+    <a href="../index.html#publications">Publications</a>
+    <a href="../index.html#experience">Experience</a>
+    <a href="../index.html#contact">Contact</a>
+  </div></nav>
+
+  <main class="wrap">
+    <p class="crumb"><a href="../index.html#research">Research</a> / Plant genomics</p>
+    <header class="page-head">
+      <h1>The Brown Fiber Phenotype in Cotton Line SA-40 Is Linked to a Missing Ty3-like Retrotransposon</h1>
+      <p class="cite"><b>Pinnika, G.</b>, Thyssen, G.N., Madison, C.A., Li, P., Fang, D.D., Naoumkina, M.,
+        Hinchliffe, D.J. (2025). <i>Frontiers in Plant Science</i> 16, 1668965. First author.</p>
+      <a class="btn" href="https://doi.org/10.3389/fpls.2025.1668965">Read the paper</a>
+    </header>
+
+    <section>
+      <h2>Summary</h2>
+      <p>Naturally brown cotton fibers come in several shades and are more flame retardant than white fibers.
+        Up to six loci for brown color are known, but the genes behind most shades were undetermined. We used
+        an F2 population from the rust-brown line SA-40 crossed with the white standard TM-1 to map the color
+        and flame-retardant traits.</p>
+      <div class="callout"><p><b>Key result.</b> Rust-brown color maps to the <i>Lc1</i> locus
+        (<i>GhTT2_A07</i>) on chromosome A07. SA-40 lacks a Ty3-like LTR retrotransposon upstream of
+        <i>GhTT2_A07</i> that is present in all white lines examined, and its absence is associated with higher
+        expression of the gene. The shade of brown appears to follow the expression level of
+        <i>GhTT2_A07</i>.</p></div>
+    </section>
+
+    <section>
+      <h2>Approach</h2>
+      <ul>
+        <li><b>Phenotyping:</b> CIELab color measurements and microscale combustion calorimetry of fibers.</li>
+        <li><b>Mapping:</b> bulked segregant analysis sequencing of 77 brown and 77 white F2 plants (Illumina,
+          150 bp paired-end), alignment with bwa-mem2 and variant calling with bcftools, followed by
+          subgenome-specific SNP markers on chromosome A07.</li>
+        <li><b>Structural comparison:</b> the upstream sequence of <i>GhTT2_A07</i> in TM-1, SA-40 and the
+          MC-BL brown line.</li>
+        <li><b>Expression:</b> RNA-seq of developing fibers at 10 days post anthesis across the shikimate,
+          phenylpropanoid and flavonoid pathways.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Results</h2>
+      <h3>SA-40 fibers are darker and burn differently</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Line</th><th>Color</th><th>L* (whiteness)</th><th>a* (red)</th><th>b* (yellow)</th><th>Char yield (%)</th><th>Total heat release (kJ/g)</th></tr>
+        <tr><td>TM-1</td><td>White</td><td>96.49</td><td>0.64</td><td>10.25</td><td>18</td><td>8.0</td></tr>
+        <tr><td>SA-40</td><td>Brown</td><td>67.75</td><td>11.58</td><td>30.33</td><td>20</td><td>7.5</td></tr>
+      </table></div>
+      <p class="muted">Table 1 of the paper (means of three technical replicates).</p>
+
+      <h3>A missing retrotransposon at <i>Lc1</i></h3>
+      <p>The strongest difference between the brown and white bulks was on chromosome A07, and fine mapping
+        placed the rust-brown locus at <i>GhTT2_A07</i>. In SA-40 the Ty3-like LTR retrotransposon upstream of
+        the gene is absent with no remnants, which indicates the insertion never occurred in this line. The
+        previously described MC-BL brown line loses the same element through a structural rearrangement and
+        expresses <i>GhTT2_A07</i> even more highly.</p>
+    </section>
+
+    <section>
+      <h2>Takeaways</h2>
+      <ul>
+        <li>Two independent routes to the same outcome: losing the retrotransposon upstream of <i>GhTT2_A07</i> raises its expression and produces brown fiber.</li>
+        <li>Expression level of a single gene can explain differences in shade between brown cotton lines.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="wrap"><p><a href="../index.html">Back to home</a></p></footer>
+</body>
+</html>
